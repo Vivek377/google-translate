@@ -9,6 +9,7 @@ import { useSpeechSynthesis } from "react-speech-kit";
 import { IoMicOutline } from "react-icons/io5";
 import { MdOutlinePauseCircle } from "react-icons/md";
 import { HiOutlineSpeakerWave } from "react-icons/hi2";
+import Loader from "./components/Loader";
 
 function App() {
   const [sourceLang, setSourceLang] = useState("en");
@@ -16,6 +17,7 @@ function App() {
   const [text, setText] = useState("");
   const [voice, setVoice] = useState("");
   const [translatedText, setTranslatedText] = useState("");
+  const [loading, setLoading] = useState(false);
   const { transcript, listening } = useSpeechRecognition();
   const { speak, cancel, speaking } = useSpeechSynthesis();
   const voices = window.speechSynthesis.getVoices();
@@ -29,15 +31,26 @@ function App() {
   };
 
   const translateText = async () => {
-    if (text !== "") {
-      const response = await axios.post("http://localhost:5600/translate", {
-        text,
-        targetLang,
-        sourceLang,
-      });
-      setTranslatedText(response.data);
+    try {
+      if (text !== "") {
+        setLoading(true);
+        const response = await axios.post(
+          "https://google-translate-bvyx.onrender.com/translate",
+          {
+            text,
+            targetLang,
+            sourceLang,
+          }
+        );
+        setLoading(false);
+        setTranslatedText(response.data);
+      }
+    } catch (e) {
+      console.log(e);
+      setLoading(false);
     }
   };
+  32;
 
   const handleSpeech = () => {
     if (!listening) {
@@ -133,10 +146,11 @@ function App() {
         </div>
         <div>
           <button
-            className="bg-blue-600 px-3 py-1 rounded-lg text-white my-3 font-semibold"
+            className="bg-blue-600 flex items-center gap-2 px-3 py-1 rounded-lg text-white my-3 font-semibold"
             onClick={translateText}
           >
             Translate
+            {loading ? <Loader /> : null}
           </button>
         </div>
       </div>

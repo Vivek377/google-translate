@@ -13,13 +13,5 @@ export default defineConfig({
     ],
     "@babel/preset-react",
   ],
-  plugins: [
-    react(),
-    [
-      "@babel/plugin-transform-runtime",
-      {
-        regenerator: true,
-      },
-    ],
-  ],
+  plugins: [react()],
 });
